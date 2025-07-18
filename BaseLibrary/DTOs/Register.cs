@@ -12,7 +12,7 @@ namespace BaseLibrary.DTOs
         [Required(ErrorMessage = "Full Name is required")]
         [MinLength(5)]
         [MaxLength(100)]
-        public string? FullName { get; set; }
+        public string? Fullname { get; set; }
 
         [DataType(DataType.Password)]
         [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
