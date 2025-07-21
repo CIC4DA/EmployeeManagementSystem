@@ -1,0 +1,55 @@
+﻿@page "/identity/account/register"
+
+<div class="container">
+	<div class="row">
+		<div class="col-lg-6">
+			<EditForm Enhance Model="User" OnValidSubmit="HandleRegistration">
+				<DataAnnotationsValidator />
+				<ValidationSummary />
+
+				<div class="card">
+					<div class="card-header">Register</div>
+					<div class="card-body">
+						<div class="form-group mt-3">
+							<label class="form-label">Full Name</label>
+							<InputText @bind-Value="User.Fullname" class="form-control"></InputText>
+						</div>
+						<div class="form-group mt-3">
+							<label class="form-label">Email</label>
+							<InputText @bind-Value="User.Email" class="form-control"></InputText>
+						</div>
+						<div class="form-group mt-3">
+							<label class="form-label">Password</label>
+							<input type="password" @bind="User.Password" class="form-control"></input>
+						</div>
+						<div class="form-group mt-3">
+							<label class="form-label">Confirm Password</label>
+							<input type="password" @bind="User.ConfirmPassword" class="form-control"></input>
+						</div>
+						<div class="form-group mt-3">
+							<button class="btn btn-outline-primary float-end" type="submit">Register</button>
+						</div>
+					</div>
+				</div>
+			</EditForm>
+		</div>
+	</div>
+
+</div>
+
+@code {
+	Register User = new();
+
+	async Task HandleRegistration()
+	{
+		var response = await accountService.CreateAsync(User);
+		if (response.Flag)
+		{
+			NavManager.NavigateTo("/identity/account/login", forceLoad: true);
+		}
+		else
+		{
+			User = new();
+		}
+	}
+}
