@@ -1,55 +1,163 @@
 ﻿@page "/identity/account/register"
+@using Syncfusion.Blazor.Popups
+@layout AuthenticationLayout
+@inject SfDialogService DialogService
+@inject AuthenticationStateProvider AuthStateProvider
 
-<div class="container">
-	<div class="row">
-		<div class="col-lg-6">
-			<EditForm Enhance Model="User" OnValidSubmit="HandleRegistration">
-				<DataAnnotationsValidator />
-				<ValidationSummary />
+<div class="container-fluid vh-100 d-flex justify-content-center align-items-center " style="backdrop-filter: blur(10px);">
+    <EditForm Model="User" OnValidSubmit="HandleRegistration">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-				<div class="card">
-					<div class="card-header">Register</div>
-					<div class="card-body">
-						<div class="form-group mt-3">
-							<label class="form-label">Full Name</label>
-							<InputText @bind-Value="User.Fullname" class="form-control"></InputText>
-						</div>
-						<div class="form-group mt-3">
-							<label class="form-label">Email</label>
-							<InputText @bind-Value="User.Email" class="form-control"></InputText>
-						</div>
-						<div class="form-group mt-3">
-							<label class="form-label">Password</label>
-							<input type="password" @bind="User.Password" class="form-control"></input>
-						</div>
-						<div class="form-group mt-3">
-							<label class="form-label">Confirm Password</label>
-							<input type="password" @bind="User.ConfirmPassword" class="form-control"></input>
-						</div>
-						<div class="form-group mt-3">
-							<button class="btn btn-outline-primary float-end" type="submit">Register</button>
-						</div>
-					</div>
-				</div>
-			</EditForm>
-		</div>
-	</div>
+        <div class="card bg-dark p-4 rounded-4 shadow-lg" style="min-width: 450px; transform: scale(0.95); opacity: 0.4; animation: fadeInScale 0.5s ease-out forwards;">
+            <div class="text-center mb-4">
+                <div class="logo-container" style="width: 60px; height: 60px; margin: 0 auto; background: linear-gradient(135deg, #3a7bd5, #00d2ff); border-radius: 12px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <span style="color: white; font-weight: bold; font-size: 1.2rem;">EMS</span>
+                </div>
+            </div>
 
+            <div class="card-header text-center fs-4 fw-bold mb-3 border-0" style="color: #00d2ff;">Register</div>
+
+            <div class="card-body">
+                <div class="mb-3 form-floating">
+                    <InputText @bind-Value="User.Fullname" id="fullname" class="form-control" placeholder=" " />
+                    <label for="fullname" class="form-label">Full Name</label>
+                </div>
+
+                <div class="mb-3 form-floating">
+                    <InputText @bind-Value="User.Email" id="email" class="form-control" placeholder=" " />
+                    <label for="email" class="form-label">Email</label>
+                </div>
+
+                <div class="mb-3 form-floating">
+                    <InputText @bind-Value="User.Password" id="password" type="password" class="form-control" placeholder=" " />
+                    <label for="password" class="form-label">Password</label>
+                </div>
+
+                <div class="mb-3 form-floating">
+                    <InputText @bind-Value="User.ConfirmPassword" id="confirmPassword" type="password" class="form-control" placeholder=" " />
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                </div>
+
+                <div class="d-grid mt-4">
+                    @if (ShowLoadingButton){
+                        <button type="button" class="btn btn-primary py-2 rounded-pill fw-bold" style="background: linear-gradient(135deg, #3a7bd5, #00d2ff); border: none;" disabled>
+                            <div class="spinner-container" style="display: flex; justify-content: center; align-items: center;">
+                                <div class="spinner-border text-light" role="status" style="width: 1.5rem; height: 1.5rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-primary py-2 rounded-pill fw-bold" style="background: linear-gradient(135deg, #3a7bd5, #00d2ff); border: none; transition: all 0.3s ease;">
+                            <span style="display: inline-block; transition: transform 0.3s ease;">Register</span>
+                        </button>
+                    }
+                </div>
+
+
+            </div>
+            <div class="card-footer">
+                <div class="text-center mt-3">
+                    <span style="color: white;">Already Have an account?</span>
+                    <a href="identity/account/login" class="text-decoration-none" style="color: #3a7bd5;">Login</a>
+                </div>
+            </div>
+        </div>
+    </EditForm>
 </div>
 
-@code {
-	Register User = new();
+<style>
+    .form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
 
-	async Task HandleRegistration()
-	{
-		var response = await accountService.CreateAsync(User);
-		if (response.Flag)
-		{
-			NavManager.NavigateTo("/identity/account/login", forceLoad: true);
-		}
-		else
-		{
-			User = new();
-		}
-	}
+    .form-control:focus {
+    border-color: #3a7bd5;
+    box-shadow: 0 0 0 0.25rem rgba(58, 123, 213, 0.25);
+    }
+
+    .form-floating > label {
+    color: #6c757d;
+    transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary:hover span {
+    transform: scale(1.05);
+    }
+
+    @@keyframes fadeInScale {
+    0%
+
+    {
+    transform: scale(0.95);
+    opacity: 0;
+    }
+
+    100% {
+    transform: scale(1);
+    opacity: 1;
+    }
+
+    }
+
+    body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+</style>
+
+
+@code {
+
+    Register User = new();
+    public bool ShowLoadingButton { get; set; } = false;
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await CheckUserAuthenticationState();
+    }
+
+    async Task HandleRegistration()
+    {
+        ShowLoadingButton = true;
+        var response = await accountService.CreateAsync(User);
+        if (response.Flag)
+        {
+            await DisplayDialog(response.Message, "Register Success");
+            NavManager.NavigateTo("/identity/account/login", forceLoad: true);
+        }
+        else
+        {
+            User = new();
+            await DisplayDialog(response.Message, "Alert");
+        }
+        ShowLoadingButton = false;
+    }
+
+    private async Task DisplayDialog(string content, string title)
+    {
+        await DialogService.AlertAsync(content, title);
+    }
+
+    private async Task CheckUserAuthenticationState()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user?.Identity != null && user.Identity.IsAuthenticated)
+        {
+            NavManager.NavigateTo("/home/dashboard");
+        }
+    }
 }

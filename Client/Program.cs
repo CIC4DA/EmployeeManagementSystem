@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 using ClientLibrary.Services.Contracts;
 using ClientLibrary.Services.Implementations;
 using Blazored.LocalStorage;
+using Syncfusion.Blazor.Popups;
+using Syncfusion.Blazor;
+using Client.ApplicationStates;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -25,5 +28,12 @@ builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 
+// syncfusion
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JEaF5cXmRCdkx0RXxbf1x1ZFRHal9STndYUiweQnxTdEBjXn1fcXVWQmFeVkRzW0leYw==");
+builder.Services.AddSyncfusionBlazor();
+builder.Services.AddScoped<SfDialogService>();
+
+// States
+builder.Services.AddScoped<DepartmentState>();
 
 await builder.Build().RunAsync();
