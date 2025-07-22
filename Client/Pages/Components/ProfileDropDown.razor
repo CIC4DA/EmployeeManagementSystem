@@ -1,24 +1,33 @@
-﻿<div class="btn-group">
-    <img src="@(ProfileImage == "" ? "images/defaultProfileImage.avif" : ProfileImage)" width="40" height="40" />
-    <button type="button" class="btn btn-none border-0 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="visually-hidden">Toggle Dropdown</span>
-    </button>
-    <ul class="dropdown-menu mt-2 border-0">
+﻿<div class="btn-group dropdown">
+    <img src="@(ProfileImage == "" ? "images/defaultProfileImage.avif" : ProfileImage)"
+         width="40"
+         height="40"
+         class="rounded-circle border border-light border-2"
+         style="cursor: pointer; transition: all 0.3s ease;"
+         data-bs-toggle="dropdown"
+         aria-expanded="false" />
+
+    <ul class="dropdown-menu dropdown-menu-end mt-2 p-0 border-0 shadow-lg"
+        style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+               min-width: 240px;
+               overflow: hidden;">
         <li>
-            <div class="card">
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <a class="text-primary fw-bold float-start text-decoration-none" style="font-family:Tahoma; cursor:pointer;">
-                                <i class="bi bi-person-gear"></i>
-                                Profile
-                            </a>
-                        </li>
-                    </ul>
+            <div class="card bg-transparent border-0">
+                <div class="card-body p-2">
+                    <a class="dropdown-item d-flex align-items-center py-2 px-3"
+                       style="color: rgba(255,255,255,0.8); border-radius: 8px; transition: all 0.3s ease; text-decoration:none;">
+                        <span class="bi bi-person-gear me-3" style="font-size: 1.1rem;"></span>
+                        <span>Profile Settings</span>
+                    </a>
                 </div>
-                <div class="card-footer">
-                    <button class="btn btn-danger btn-sm fw-bold w-100" @onClick="LogoutClicked">
-                        <i class="bi bi-box-arrow-left"></i>
+                <div class="card-footer p-2 bg-transparent border-top-0">
+                    <button class="btn btn-sm w-100"
+                            @onclick="LogoutClicked"
+                            style="background: rgba(255,255,255,0.1);
+                                   color: white;
+                                   border-radius: 8px;
+                                   transition: all 0.3s ease;">
+                        <span class="bi bi-box-arrow-left me-2"></span>
                         Logout
                     </button>
                 </div>
@@ -26,6 +35,34 @@
         </li>
     </ul>
 </div>
+
+<style>
+    .dropdown-item:hover, .dropdown-item:focus {
+        color: white !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .dropdown-menu {
+        border: 1px solid rgba(255,255,255,0.1) !important;
+    }
+
+    @@keyframes fadeInScale {
+        0% {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+    }
+</style>
 
 @code {
     public string ProfileImage { get; set; } = "";
@@ -35,6 +72,6 @@
         var logoutModel = new UserSession();
         var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
         await customAuthStateProvider.UpdateAuthenticationState(logoutModel);
-        NavManager.NavigateTo("/identity/account/login", replace:true, forceLoad: true);
+        NavManager.NavigateTo("/identity/account/login", replace: true, forceLoad: true);
     }
 }

@@ -1,4 +1,5 @@
 ﻿@implements IDisposable
+@using BaseLibrary.Entities
 @using Client.ApplicationStates;
 @inject DepartmentState departmentState
 
@@ -43,7 +44,7 @@
 
 @code {
 	GeneralDepartmentDialog? generalDepartmentDialog;
-	GeneralDepartmentDTO Department = new();
+	GeneralDepartment Department = new();
 
 	protected override void OnInitialized()
 	{
