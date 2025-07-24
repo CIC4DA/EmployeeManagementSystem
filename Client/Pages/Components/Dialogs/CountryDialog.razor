@@ -1,0 +1,64 @@
+﻿<SfDialog Width="350px" IsModal="true" ShowCloseIcon="true" @bind-Visible="isVisible">
+    <DialogEvents OnOpen="OpenDialog"></DialogEvents>
+
+    <DialogTemplates>
+        <Header>@Title Department</Header>
+        <Content>
+            <EditForm Model="Country" Enhance OnSubmit="Save">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <InputText @bind-Value="Country.Name" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+        </Content>
+    </DialogTemplates>
+
+    <DialogButtons>
+        <DialogButton Content="SAVE" Type="ButtonType.Submit" IsPrimary="true" OnClick="Save" />
+    </DialogButtons>
+
+</SfDialog>
+
+@code {
+    [Parameter]
+    public Country Country { get; set; } = new();
+    private bool isVisible { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<Country> HandleSaveOperationEvent { get; set; }
+    public string Title { get; set; } = "Add";
+
+    public void OpenDialog()
+    {
+        isVisible = true;
+        StateHasChanged();
+    }
+
+    public void CloseDialog()
+    {
+        isVisible = false;
+        StateHasChanged();
+    }
+
+    async void Save()
+    {
+        if (string.IsNullOrEmpty(Country.Name))
+        {
+            await dialogService.AlertAsync("You need to provide Country Name", "Alert!");
+        }
+        else
+        {
+            await HandleSaveOperationEvent.InvokeAsync(Country);
+            CloseDialog();
+        }
+    }
+
+    public void ChangeTitle(string title)
+    {
+        Title = title;
+    }
+}

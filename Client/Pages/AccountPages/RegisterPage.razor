@@ -1,8 +1,5 @@
 ﻿@page "/identity/account/register"
-@using Syncfusion.Blazor.Popups
 @layout AuthenticationLayout
-@inject SfDialogService DialogService
-@inject AuthenticationStateProvider AuthStateProvider
 
 <div class="container-fluid vh-100 d-flex justify-content-center align-items-center " style="backdrop-filter: blur(10px);">
     <EditForm Model="User" OnValidSubmit="HandleRegistration">
@@ -148,7 +145,7 @@
 
     private async Task DisplayDialog(string content, string title)
     {
-        await DialogService.AlertAsync(content, title);
+        await dialogService.AlertAsync(content, title);
     }
 
     private async Task CheckUserAuthenticationState()

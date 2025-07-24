@@ -1,6 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using Client.ApplicationStates
-@inject DepartmentState departmentState
 
 <AuthorizeView>
     <Authorized>
@@ -40,10 +39,10 @@
                 <div class="nav-item px-3 py-2">
                     <NavLink class="nav-link d-flex align-items-center" @onclick="ShowAdminMenuContainer" style="cursor:pointer; border-radius: 8px; transition: all 0.3s ease;" href="javascript:void()">
                         <span class="bi bi-person-fill me-3" style="font-size: 1.2rem;"></span>
-                        <span>Administration</span>
+                        <span>Adminisitration</span>
                     </NavLink>
                     <div class="submenu" style="margin-left: 1.5rem; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease; visibility:@CssStyle; max-height:@(ShowHide ? "500px" : "0"); opacity:@(ShowHide ? "1" : "0")">
-                        <a class="nav-link d-flex align-items-center py-2" style="border-radius: 8px; transition: all 0.3s ease;">
+                        <a class="nav-link d-flex align-items-center py-2" @onclick="UserClicked" style="border-radius: 8px; transition: all 0.3s ease;">
                             <span class="bi bi-people me-3" style="font-size: 1rem;"></span>
                             <span>Users</span>
                         </a>
@@ -54,26 +53,56 @@
                 <div class="nav-item px-3 py-2">
                     <NavLink class="nav-link d-flex align-items-center" @onclick="ShowDepartmentContainer" style="cursor:pointer; border-radius: 8px; transition: all 0.3s ease;" href="javascript:void()">
                         <span class="bi bi-backpack4-fill me-3" style="font-size: 1.2rem;"></span>
-                        <span>Department</span>
+                        <span>Management</span>
                     </NavLink>
                     <div class="submenu" style="margin-left: 1.5rem; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease; visibility:@DepartmentCssStyle; max-height:@(ShowHideDepartment ? "500px" : "0"); opacity:@(ShowHideDepartment ? "1" : "0")">
                         <ul class="list-group ps-0">
                             <li style="list-style:none">
                                 <a class="nav-link d-flex align-items-center py-2" @onclick="GeneralDepartmentClicked" style="border-radius: 8px; transition: all 0.3s ease;">
                                     <span class="bi bi-file-medical me-3" style="font-size: 1rem;"></span>
-                                    <span>General</span>
+                                    <span>General Dep</span>
                                 </a>
                             </li>
                             <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" style="border-radius: 8px; transition: all 0.3s ease;">
+                                <a class="nav-link d-flex align-items-center py-2" @onclick="DepartmentClicked"  style="border-radius: 8px; transition: all 0.3s ease;">
                                     <span class="bi bi-substack me-3" style="font-size: 1rem;"></span>
                                     <span>Department</span>
                                 </a>
                             </li>
                             <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" style="border-radius: 8px; transition: all 0.3s ease;">
+                                <a class="nav-link d-flex align-items-center py-2" @onclick="BranchClicked" style="border-radius: 8px; transition: all 0.3s ease;">
                                     <span class="bi bi-chevron-bar-contract me-3" style="font-size: 1rem;"></span>
                                     <span>Branch</span>
+                                </a>
+                            </li>
+                            <li class="list-style:none">
+                                <hr/>
+                            </li>
+                            <li style="list-style:none">
+                                <a class="nav-link d-flex align-items-center py-2" @onclick="CountryClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                    <span class="bi bi-gro-alt me-3" style="font-size: 1rem;"></span>
+                                    <span>Country</span>
+                                </a>
+                            </li>
+                            <li style="list-style:none">
+                                <a class="nav-link d-flex align-items-center py-2" @onclick="CityClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                    <span class="bi bi-pin-map-fill me-3" style="font-size: 1rem;"></span>
+                                    <span>City</span>
+                                </a>
+                            </li>
+                            <li style="list-style:none">
+                                <a class="nav-link d-flex align-items-center py-2" @onclick="TownClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                    <span class="bi bi-geo me-3" style="font-size: 1rem;"></span>
+                                    <span>Town</span>
+                                </a>
+                            </li>
+                            <li class="list-style:none">
+                                <hr />
+                            </li>
+                            <li style="list-style:none">
+                                <a class="nav-link d-flex align-items-center py-2" @onclick="EmployeeClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                    <span class="bi bi-people-fill me-3" style="font-size: 1rem;"></span>
+                                    <span>Employee</span>
                                 </a>
                             </li>
                         </ul>
@@ -219,9 +248,20 @@
         }
     }
 
-    void GeneralDepartmentClicked()
-    {
-        departmentState.GeneralDepartmentClicked();
-    }
+    // State tracking
+    // General Department / Department / Branch
+    void GeneralDepartmentClicked() => allState.GeneralDepartmentClicked();
+    void DepartmentClicked() => allState.DepartmentClicked();
+    void BranchClicked() => allState.BranchClicked();
 
+    // Country / City / Town
+    void CountryClicked() => allState.CountryClicked();
+    void CityClicked() => allState.CityClicked();
+    void TownClicked() => allState.TownClicked();
+
+    // User
+    void UserClicked() => allState.UserClicked();
+
+    // Employee
+    void EmployeeClicked() => allState.EmployeeClicked();
 }

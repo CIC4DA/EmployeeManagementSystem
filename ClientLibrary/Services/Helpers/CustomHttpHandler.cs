@@ -2,6 +2,7 @@
 using BaseLibrary.DTOs;
 using ClientLibrary.Services.Contracts;
 
+// This implements a middleware in each call for token check
 namespace ClientLibrary.Services.Helpers
 {
     public class CustomHttpHandler(GetHttpClient getHttpClient, LocalStorageService localStorageService, IUserAccountService userAccountService) : DelegatingHandler

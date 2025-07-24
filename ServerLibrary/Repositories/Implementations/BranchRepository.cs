@@ -8,7 +8,9 @@ namespace ServerLibrary.Repositories.Implementations
 {
     public class BranchRepository(AppDbContext appDbContext) : IGenericRepositoryInterface<Branch>
     {
-        public async Task<List<Branch>> GetAll() => await appDbContext.Branches.ToListAsync();
+        public async Task<List<Branch>> GetAll() => await appDbContext.Branches.AsNoTracking()
+                                                                                .Include(_ => _.Department)
+                                                                                .ToListAsync();
 
         public async Task<Branch> GetById(int id) => await appDbContext.Branches.FindAsync(id);
 
@@ -25,6 +27,7 @@ namespace ServerLibrary.Repositories.Implementations
             var branch = await appDbContext.Branches.FindAsync(item.Id);
             if (branch is null) return NotFound();
             branch.Name = item.Name;
+            branch.DepartmentId = item.DepartmentId;
             await Commit();
             return Success();
         }

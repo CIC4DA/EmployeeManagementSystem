@@ -1,0 +1,228 @@
+﻿@implements IDisposable
+
+@if (allState.ShowCountry)
+{
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card border-0 shadow-sm overflow-hidden">
+                    <div class="card-header border-0 py-3"
+                         style="background: linear-gradient(135deg, #1a2a6c, #3a7bd5);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="m-0 text-white fw-semibold">
+                                <i class="bi bi-building me-2"></i>Countries
+                            </h4>
+                            <button class="btn btn-light btn-sm fw-medium"
+                                    @onclick="AddButtonClicked"
+                                    style="min-width: 140px;">
+                                <i class="bi bi-plus-circle me-2"></i>Add Country
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 580px;">
+                            <table class="table table-borderless mb-0">
+                                <thead class="" style="background: #0f2027;">
+                                    <tr>
+                                        <th scope="col" class="ps-4 py-3">#</th>
+                                        <th scope="col" class="py-3">ID</th>
+                                        <th scope="col" class="py-3">Country</th>
+                                        <th scope="col" class="text-end pe-4 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Countries is not null)
+                                    {
+                                        int count = 1;
+                                        foreach (var item in Countries)
+                                        {
+                                            <tr class="@((count % 2 == 0) ? "bg-light" : "bg-white")"
+                                                style="transition: all 0.2s ease; border-bottom: 1px solid #f0f0f0;">
+                                                <td class="ps-4 align-middle">@count</td>
+                                                <td class="align-middle">@item.Id</td>
+                                                <td class="align-middle">@item.Name</td>
+                                                <td class="text-end pe-4 align-middle">
+                                                    <button class="btn btn-sm btn-hover-scale text-primary bg-transparent border-0 p-0 me-2"
+                                                            @onclick="() => EditClicked(item)">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-hover-scale text-danger bg-transparent border-0 p-0"
+                                                            @onclick="() => DeleteClicked(item)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Table styling */
+        .table {
+            font-size: 0.9rem;
+        }
+
+            .table th {
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+                color: #495057;
+            }
+
+            /* Row hover effect */
+            .table tbody tr {
+                transition: all 0.2s ease;
+            }
+
+                .table tbody tr:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+                    background-color: #f8f9fa !important;
+                }
+
+        /* Button hover animation */
+        .btn-hover-scale {
+            transition: transform 0.2s ease;
+        }
+
+            .btn-hover-scale:hover {
+                transform: scale(1.2);
+            }
+
+        /* Scrollbar styling */
+        .table-responsive {
+            scrollbar-width: thin;
+            scrollbar-color: #dee2e6 #f8f9fa;
+        }
+
+            .table-responsive::-webkit-scrollbar {
+                height: 6px;
+                width: 6px;
+            }
+
+            .table-responsive::-webkit-scrollbar-track {
+                background: #f8f9fa;
+            }
+
+            .table-responsive::-webkit-scrollbar-thumb {
+                background-color: #adb5bd;
+                border-radius: 3px;
+            }
+
+        /* Card styling */
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Header gradient */
+        .card-header {
+            border-radius: 0 !important;
+        }
+    </style>
+}
+
+<CountryDialog @ref="countryDialog"
+						 HandleSaveOperationEvent="HandleSaveOperationEvent"
+						Country="Country" />
+
+@code {
+	CountryDialog? countryDialog;
+	Country Country = new();
+	public string Title { get; set; } = "Add";
+	public List<Country> Countries { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await GetCountries();
+		allState.Action += StateHasChanged;
+	}
+
+	void OpenDialog()
+	{
+		countryDialog?.OpenDialog();
+	}
+
+	public void Dispose()
+	{
+		allState.Action -= StateHasChanged;
+	}
+
+	// Add
+	private void AddButtonClicked()
+	{
+		countryDialog?.ChangeTitle("Add");
+		Country = new();
+		OpenDialog();
+	}
+
+	// Edit
+	private void EditClicked(Country country)
+	{
+		countryDialog?.ChangeTitle("Update");
+		Country = country;
+		OpenDialog();
+	}
+
+	// Delete
+	private async Task DeleteClicked(Country country)
+	{
+		bool Confirm = await dialogService.ConfirmAsync($"Are you sure you wanna delete {country.Name}?", "Confirm Delete");
+		if (!Confirm) return;
+
+		var response = await countryService.DeleteById(country.Id, Constants.CountryUrl);
+		if (await DisplayMessage(response.Flag, response.Message))
+			await GetCountries();
+	}
+
+	// -------------- CALLS -------------
+	private async Task GetCountries()
+	{
+		Countries = await countryService.GetAll(Constants.CountryUrl);
+	}
+
+	private async Task HandleSaveOperationEvent(Country country)
+	{
+		bool successCheck = false;
+		if (country.Id > 0)
+		{
+			var result = await countryService.Update(country, Constants.CountryUrl);
+			successCheck = await DisplayMessage(result.Flag, result.Message);
+		}
+		else
+		{
+			var result = await countryService.Insert(country, Constants.CountryUrl);
+			successCheck = await DisplayMessage(result.Flag, result.Message);
+		}
+
+		if (successCheck)
+		{
+			Country = new();
+			await GetCountries();
+			countryDialog?.ChangeTitle("Add");
+		}
+	}
+
+	private async Task<bool> DisplayMessage(bool flag, string Message)
+	{
+		if (flag)
+		{
+			await dialogService.AlertAsync(Message, "Success Operation");
+			return true;
+		}
+		else
+		{
+			await dialogService.AlertAsync(Message, "Alert!");
+			return false;
+		}
+	}
+}
