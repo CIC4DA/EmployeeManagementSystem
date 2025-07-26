@@ -17,6 +17,6 @@ namespace BaseLibrary.Entities.OtherEntities.Sanction
         public SanctionType? SanctionType { get; set; }
 
         [Required]
-        public int SanctionId { get; set; }
+        public int SanctionTypeId { get; set; }
     }
 }

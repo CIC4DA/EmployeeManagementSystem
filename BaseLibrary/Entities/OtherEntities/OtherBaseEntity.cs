@@ -6,12 +6,10 @@ namespace BaseLibrary.Entities.OtherEntities
     {
         public int Id { get; set; }
 
-        [Required]
-        public string CivilId { get; set; } = string.Empty;
+        // One to many relationship with vacationtype
+        public string? EmployeeName { get; set; }
 
-        [Required]
-        public string FileNumber { get; set; } = string.Empty;
+        public int EmployeeId { get; set; } 
 
-        public string? Other { get; set; }
     }
 }

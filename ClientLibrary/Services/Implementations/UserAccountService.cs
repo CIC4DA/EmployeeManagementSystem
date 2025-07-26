@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using BaseLibrary.DTOs;
+using BaseLibrary.Entities;
 using BaseLibrary.Responses;
 using ClientLibrary.Services.Contracts;
 using ClientLibrary.Services.Helpers;
@@ -88,13 +89,48 @@ namespace ClientLibrary.Services.Implementations
                    ?? throw new InvalidOperationException("Failed to Create User");
         }
 
+        public async Task<List<ManageUser>> GetUsers()
+        {
+            var httpClient = await getHttpClient.GetPrivateHttpClient();
+            var result = await httpClient.GetFromJsonAsync<List<ManageUser>>($"{AuthUrl}/users");
+            return result!;
+        }
+
+        public async Task<GeneralResponse> UpdateUser(ManageUser User)
+        {
+            var httpClient = getHttpClient.GetPublicHttpClient();
+            var response = await httpClient.PutAsJsonAsync($"{AuthUrl}/update-user", User);
+            if (!response.IsSuccessStatusCode) return new GeneralResponse(false, "Error Occured");
+
+            return await response.Content.ReadFromJsonAsync<GeneralResponse>() 
+                ?? throw new InvalidOperationException("Failed to Update User"); ;
+        }
+
+        public async Task<List<SystemRole>> GetRoles()
+        {
+            var httpClient = await getHttpClient.GetPrivateHttpClient();
+            var response = await httpClient.GetFromJsonAsync<List<SystemRole>>($"{AuthUrl}/roles");
+            return response!;
+        }
+
+        public async Task<GeneralResponse> DeleteUser(int id)
+        {
+            var httpClient = await getHttpClient.GetPrivateHttpClient();
+            var response = await httpClient.DeleteAsync($"{AuthUrl}/delete-user/{id}");
+            if (!response.IsSuccessStatusCode) return new GeneralResponse(false, "Error Occured");
+
+            return await response.Content.ReadFromJsonAsync<GeneralResponse>()
+                ?? throw new InvalidOperationException("Failed to Update User");
+        }
+
+
         public async Task<WeatherForecast[]> GetWeatherForecasts()
         {
             var httpClient = await getHttpClient.GetPrivateHttpClient();
             var response = await httpClient.GetFromJsonAsync<WeatherForecast[]>("api/weatherforecast");
             return response!;
         }
-
+        
     }
 
 }

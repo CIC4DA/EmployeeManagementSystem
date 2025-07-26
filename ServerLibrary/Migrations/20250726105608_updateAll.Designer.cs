@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServerLibrary.Data;
 
@@ -11,9 +12,11 @@ using ServerLibrary.Data;
 namespace ServerLibrary.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250726105608_updateAll")]
+    partial class updateAll
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,9 +218,6 @@ namespace ServerLibrary.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("MedicalDiagnosis")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -227,6 +227,8 @@ namespace ServerLibrary.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Doctors");
                 });
@@ -242,9 +244,6 @@ namespace ServerLibrary.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -255,6 +254,8 @@ namespace ServerLibrary.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("OvertimeTypeId");
 
@@ -292,9 +293,6 @@ namespace ServerLibrary.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Punishment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -307,6 +305,8 @@ namespace ServerLibrary.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("SanctionTypeId");
 
@@ -341,9 +341,6 @@ namespace ServerLibrary.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("NumberOfDays")
                         .HasColumnType("int");
 
@@ -354,6 +351,8 @@ namespace ServerLibrary.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("VacationTypeId");
 
@@ -505,35 +504,70 @@ namespace ServerLibrary.Migrations
                     b.Navigation("Town");
                 });
 
+            modelBuilder.Entity("BaseLibrary.Entities.OtherEntities.Doctor.Doctor", b =>
+                {
+                    b.HasOne("BaseLibrary.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("BaseLibrary.Entities.OtherEntities.Overtime.Overtime", b =>
                 {
+                    b.HasOne("BaseLibrary.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BaseLibrary.Entities.OtherEntities.Overtime.OvertimeType", "OvertimeType")
                         .WithMany("Overtimes")
                         .HasForeignKey("OvertimeTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Employee");
+
                     b.Navigation("OvertimeType");
                 });
 
             modelBuilder.Entity("BaseLibrary.Entities.OtherEntities.Sanction.Sanction", b =>
                 {
+                    b.HasOne("BaseLibrary.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BaseLibrary.Entities.OtherEntities.Sanction.SanctionType", "SanctionType")
                         .WithMany("Sanctions")
                         .HasForeignKey("SanctionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Employee");
+
                     b.Navigation("SanctionType");
                 });
 
             modelBuilder.Entity("BaseLibrary.Entities.OtherEntities.Vacation.Vacation", b =>
                 {
+                    b.HasOne("BaseLibrary.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BaseLibrary.Entities.OtherEntities.Vacation.VacationType", "VacationType")
                         .WithMany("Vacations")
                         .HasForeignKey("VacationTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Employee");
 
                     b.Navigation("VacationType");
                 });

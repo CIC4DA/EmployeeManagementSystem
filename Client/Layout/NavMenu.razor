@@ -1,117 +1,131 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using Microsoft.AspNetCore.Authorization
 @using Client.ApplicationStates
+@attribute [Authorize]
 
-<AuthorizeView>
-    <Authorized>
-        <div class="top-row ps-3 navbar navbar-dark" style="background: linear-gradient(135deg, #1a2a6c, #3a7bd5);">
-            <div class="container-fluid">
+<div class="top-row ps-3 navbar navbar-dark" style="background: linear-gradient(135deg, #1a2a6c, #3a7bd5);">
+    <div class="container-fluid">
+        <AuthorizeView>
+            <Authorized>
                 <a class="text-white" style="font-weight: 500; letter-spacing: 0.5px; text-decoration: none;">
                     Welcome, @context.User.Identity!.Name
                 </a>
-                <button title="Navigation Menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-        </div>
+            </Authorized>
+        </AuthorizeView>
+        <button title="Navigation Menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
 
-        <div class="@NavMenuCssClass nav-scrollable" style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);">
+<div class="@NavMenuCssClass nav-scrollable" style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);">
             <nav class="flex-column">
-                <div class="nav-item px-3 py-2">
-                    <NavLink class="nav-link d-flex align-items-center" href="home/dashboard" Match="NavLinkMatch.All" style="border-radius: 8px; transition: all 0.3s ease;">
-                        <span class="bi bi-house-door-fill me-3" style="font-size: 1.2rem;"></span>
-                        <span>Home</span>
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3 py-2">
-                    <NavLink class="nav-link d-flex align-items-center" href="counter" style="border-radius: 8px; transition: all 0.3s ease;">
-                        <span class="bi bi-plus-square-fill me-3" style="font-size: 1.2rem;"></span>
-                        <span>Counter</span>
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3 py-2">
-                    <NavLink class="nav-link d-flex align-items-center" href="weather" style="border-radius: 8px; transition: all 0.3s ease;">
-                        <span class="bi bi-list-nested me-3" style="font-size: 1.2rem;"></span>
-                        <span>Weather</span>
-                    </NavLink>
-                </div>
+                        <div class="nav-item px-3 py-2">
+            <NavLink class="nav-link d-flex align-items-center" href="home/dashboard" Match="NavLinkMatch.All" @onclick="EmployeeClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                <span class="bi bi-house-door-fill me-3" style="font-size: 1.2rem;"></span>
+                                <span>Home</span>
+                            </NavLink>
+                        </div>
+                    
+                        <!-- Administration Section -->
+                        <AuthorizeView Roles="Admin">
+                            <Authorized>
+                                <div class="nav-item px-3 py-2">
+                                    <NavLink class="nav-link d-flex align-items-center" @onclick="ShowAdminMenuContainer" style="cursor:pointer; border-radius: 8px; transition: all 0.3s ease;" href="javascript:void()">
+                                        <span class="bi bi-person-fill me-3" style="font-size: 1.2rem;"></span>
+                                        <span>Adminisitration</span>
+                                    </NavLink>
+                                    <div class="submenu" style="margin-left: 1.5rem; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease; visibility:@CssStyle; max-height:@(ShowHide ? "500px" : "0"); opacity:@(ShowHide ? "1" : "0")">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="UserClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-people me-3" style="font-size: 1rem;"></span>
+                                            <span>Users</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </Authorized>
+                        </AuthorizeView>
 
-                <!-- Administration Section -->
-                <div class="nav-item px-3 py-2">
-                    <NavLink class="nav-link d-flex align-items-center" @onclick="ShowAdminMenuContainer" style="cursor:pointer; border-radius: 8px; transition: all 0.3s ease;" href="javascript:void()">
-                        <span class="bi bi-person-fill me-3" style="font-size: 1.2rem;"></span>
-                        <span>Adminisitration</span>
-                    </NavLink>
-                    <div class="submenu" style="margin-left: 1.5rem; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease; visibility:@CssStyle; max-height:@(ShowHide ? "500px" : "0"); opacity:@(ShowHide ? "1" : "0")">
-                        <a class="nav-link d-flex align-items-center py-2" @onclick="UserClicked" style="border-radius: 8px; transition: all 0.3s ease;">
-                            <span class="bi bi-people me-3" style="font-size: 1rem;"></span>
-                            <span>Users</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Department Section -->
-                <div class="nav-item px-3 py-2">
-                    <NavLink class="nav-link d-flex align-items-center" @onclick="ShowDepartmentContainer" style="cursor:pointer; border-radius: 8px; transition: all 0.3s ease;" href="javascript:void()">
-                        <span class="bi bi-backpack4-fill me-3" style="font-size: 1.2rem;"></span>
-                        <span>Management</span>
-                    </NavLink>
-                    <div class="submenu" style="margin-left: 1.5rem; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease; visibility:@DepartmentCssStyle; max-height:@(ShowHideDepartment ? "500px" : "0"); opacity:@(ShowHideDepartment ? "1" : "0")">
-                        <ul class="list-group ps-0">
-                            <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" @onclick="GeneralDepartmentClicked" style="border-radius: 8px; transition: all 0.3s ease;">
-                                    <span class="bi bi-file-medical me-3" style="font-size: 1rem;"></span>
-                                    <span>General Dep</span>
-                                </a>
-                            </li>
-                            <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" @onclick="DepartmentClicked"  style="border-radius: 8px; transition: all 0.3s ease;">
-                                    <span class="bi bi-substack me-3" style="font-size: 1rem;"></span>
-                                    <span>Department</span>
-                                </a>
-                            </li>
-                            <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" @onclick="BranchClicked" style="border-radius: 8px; transition: all 0.3s ease;">
-                                    <span class="bi bi-chevron-bar-contract me-3" style="font-size: 1rem;"></span>
-                                    <span>Branch</span>
-                                </a>
-                            </li>
-                            <li class="list-style:none">
-                                <hr/>
-                            </li>
-                            <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" @onclick="CountryClicked" style="border-radius: 8px; transition: all 0.3s ease;">
-                                    <span class="bi bi-gro-alt me-3" style="font-size: 1rem;"></span>
-                                    <span>Country</span>
-                                </a>
-                            </li>
-                            <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" @onclick="CityClicked" style="border-radius: 8px; transition: all 0.3s ease;">
-                                    <span class="bi bi-pin-map-fill me-3" style="font-size: 1rem;"></span>
-                                    <span>City</span>
-                                </a>
-                            </li>
-                            <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" @onclick="TownClicked" style="border-radius: 8px; transition: all 0.3s ease;">
-                                    <span class="bi bi-geo me-3" style="font-size: 1rem;"></span>
-                                    <span>Town</span>
-                                </a>
-                            </li>
-                            <li class="list-style:none">
-                                <hr />
-                            </li>
-                            <li style="list-style:none">
-                                <a class="nav-link d-flex align-items-center py-2" @onclick="EmployeeClicked" style="border-radius: 8px; transition: all 0.3s ease;">
-                                    <span class="bi bi-people-fill me-3" style="font-size: 1rem;"></span>
-                                    <span>Employee</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                        <!-- Department Section -->
+                        <div class="nav-item px-3 py-2">
+                            <NavLink class="nav-link d-flex align-items-center" @onclick="ShowDepartmentContainer" style="cursor:pointer; border-radius: 8px; transition: all 0.3s ease;" href="javascript:void()">
+                                <span class="bi bi-backpack4-fill me-3" style="font-size: 1.2rem;"></span>
+                                <span>Management</span>
+                            </NavLink>
+                            <div class="submenu" style="margin-left: 1.5rem; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease; visibility:@DepartmentCssStyle; max-height:@(ShowHideDepartment ? "3000px" : "0"); opacity:@(ShowHideDepartment ? "1" : "0")">
+                                <ul class="list-group ps-0">
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="GeneralDepartmentClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-file-medical me-3" style="font-size: 1rem;"></span>
+                                            <span>General Dep</span>
+                                        </a>
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="DepartmentClicked"  style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-substack me-3" style="font-size: 1rem;"></span>
+                                            <span>Department</span>
+                                        </a>
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="BranchClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-chevron-bar-contract me-3" style="font-size: 1rem;"></span>
+                                            <span>Branch</span>
+                                        </a>
+                                    </li>
+                                    <li class="list-style:none">
+                                        <hr/>
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="CountryClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-gro-alt me-3" style="font-size: 1rem;"></span>
+                                            <span>Country</span>
+                                        </a>
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="CityClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-pin-map-fill me-3" style="font-size: 1rem;"></span>
+                                            <span>City</span>
+                                        </a>
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="TownClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-geo me-3" style="font-size: 1rem;"></span>
+                                            <span>Town</span>
+                                        </a>
+                                    </li>
+                                    <li class="list-style:none">
+                                        <hr />
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="OvertimeTypeClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-gro-alt me-3" style="font-size: 1rem;"></span>
+                                            <span>Overtime Type</span>
+                                        </a>
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="SanctionTypeClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-geo me-3" style="font-size: 1rem;"></span>
+                                            <span>Sanction Type</span>
+                                        </a>
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="VacationTypeClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-pin-map-fill me-3" style="font-size: 1rem;"></span>
+                                            <span>Vacation Type</span>
+                                        </a>
+                                    </li>
+                                    <li class="list-style:none">
+                                        <hr />
+                                    </li>
+                                    <li style="list-style:none">
+                                        <a class="nav-link d-flex align-items-center py-2" @onclick="EmployeeClicked" style="border-radius: 8px; transition: all 0.3s ease;">
+                                            <span class="bi bi-people-fill me-3" style="font-size: 1rem;"></span>
+                                            <span>Employee</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
             </nav>
         </div>
-    </Authorized>
-</AuthorizeView>
 
 <style>
     .nav-scrollable {
@@ -157,7 +171,7 @@
     }
 
         .submenu.show {
-            max-height: 500px;
+            max-height: 100vh;
             opacity: 1;
         }
 
@@ -264,4 +278,15 @@
 
     // Employee
     void EmployeeClicked() => allState.EmployeeClicked();
+
+    void HealthClicked() => allState.HealthClicked();
+
+    void OvertimeClicked() => allState.OvertimeClicked();
+    void OvertimeTypeClicked() => allState.OvertimeTypeClicked();
+
+    void SanctionClicked() => allState.SanctionClicked();
+    void SanctionTypeClicked() => allState.SanctionTypeClicked();
+
+    void VacationClicked() => allState.VacationClicked();
+    void VacationTypeClicked() => allState.VacationTypeClicked();
 }

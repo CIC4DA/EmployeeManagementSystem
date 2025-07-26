@@ -126,6 +126,46 @@ namespace ServerLibrary.Repositories.Implementations
 
         }
 
+        public async Task<List<ManageUser>> GetUsers()
+        {
+            var allUsers = await GetApplicationUsers();
+            var allUsersRoles = await UsersRoles();
+            var allRoles = await SystemRoles();
+
+            if (allUsers.Count == 0 || allRoles.Count == 0) return null!;
+
+            var users = new List<ManageUser>();
+            foreach(var user in allUsers)
+            {
+                var userRole = allUsersRoles.FirstOrDefault(_  => _.UserId == user.Id);
+                var roleName = allRoles.FirstOrDefault(_ => _.Id == userRole!.RoleId);
+                users.Add(new ManageUser() { UserId = user.Id, Name = user.Fullname!, Email = user.Email!, Role = roleName!.Name! });
+            }
+            return users;
+        }
+
+        public async Task<GeneralResponse> UpdateUser(ManageUser User)
+        {
+            var getRole = (await SystemRoles()).FirstOrDefault(_ => _.Name!.Equals(User.Role));
+            var userRole = await appDbContext.UserRoles.FirstOrDefaultAsync(_ => _.UserId == User.UserId);
+            userRole!.RoleId = getRole!.Id;
+            await appDbContext.SaveChangesAsync();
+            return new GeneralResponse(true, "User role updated successfully");
+        }
+
+        public async Task<List<SystemRole>> GetRoles()
+        {
+           return await SystemRoles();
+        }
+
+        public async Task<GeneralResponse> DeleteUser(int id)
+        {
+            var user = await appDbContext.ApplicationUsers.FirstOrDefaultAsync(_ => _.Id == id);
+            appDbContext.ApplicationUsers.Remove(user);
+            await appDbContext.SaveChangesAsync();
+            return new GeneralResponse(true, "User Successfully Deleted");
+        }
+
         // ---------------------- HELPERS ----------------------
 
         private async Task<UserRole> FindUserRole(int userId) => await appDbContext.UserRoles.FirstOrDefaultAsync(_ => _.UserId == userId);
@@ -164,5 +204,11 @@ namespace ServerLibrary.Repositories.Implementations
         }
 
         private static string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+        private async Task<List<ApplicationUser>> GetApplicationUsers() => await appDbContext.ApplicationUsers.AsNoTracking().ToListAsync();
+
+        private async Task<List<UserRole>> UsersRoles() => await appDbContext.UserRoles.AsNoTracking().ToListAsync();
+
+        private async Task<List<SystemRole>> SystemRoles() => await appDbContext.SystemRoles.AsNoTracking().ToListAsync();
     }
 }

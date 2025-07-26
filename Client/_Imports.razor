@@ -1,27 +1,41 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
-@using BaseLibrary.Entities
-@using Client.ApplicationStates
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
 @using Microsoft.JSInterop
+
 @using Client
 @using Client.Layout
+@using Client.ApplicationStates
 @using Client.Pages.Components
 @using Client.Pages.Components.Dialogs
 @using Client.Pages.ContentPages
 @using Client.Pages.ContentPages.ManagementPages
-@using Client.ApplicationStates
+@using Client.Pages.ContentPages.AdministrationPages
+@using Client.Pages.ContentPages.EmployeePages
+@using Client.Pages.OtherPages.DoctorPages
+@using Client.Pages.OtherPages.OvertimePages
+@using Client.Pages.OtherPages.SanctionPages
+@using Client.Pages.OtherPages.VacationPages
+
 
 @using BaseLibrary.DTOs
+@using BaseLibrary.Entities
+@using BaseLibrary.Entities.OtherEntities.Doctor
+@using BaseLibrary.Entities.OtherEntities.Overtime
+@using BaseLibrary.Entities.OtherEntities.Sanction
+@using BaseLibrary.Entities.OtherEntities.Vacation
+
 @using ClientLibrary.Services.Helpers
 @using ClientLibrary.Services.Contracts
+
 @using Microsoft.AspNetCore.Components.Authorization
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
 
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavManager
@@ -48,5 +62,19 @@
 
 @* employee *@
 @inject IGenericServiceInterface<Employee> employeeService
+
+@inject IGenericServiceInterface<Doctor> doctorService
+
+@inject IGenericServiceInterface<Overtime> overtimeService
+@inject IGenericServiceInterface<OvertimeType> overtimeTypeService
+
+@inject IGenericServiceInterface<Sanction> sanctionService
+@inject IGenericServiceInterface<SanctionType> sanctionTypeService
+
+@inject IGenericServiceInterface<Vacation> vacationService
+@inject IGenericServiceInterface<VacationType> vacationTypeService
+
+
+
 
 

@@ -1,4 +1,8 @@
 using BaseLibrary.Entities;
+using BaseLibrary.Entities.OtherEntities.Doctor;
+using BaseLibrary.Entities.OtherEntities.Overtime;
+using BaseLibrary.Entities.OtherEntities.Sanction;
+using BaseLibrary.Entities.OtherEntities.Vacation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +65,19 @@ builder.Services.AddScoped<IGenericRepositoryInterface<Branch>, BranchRepository
 builder.Services.AddScoped<IGenericRepositoryInterface<Country>, CountryRepository>();
 builder.Services.AddScoped<IGenericRepositoryInterface<City>, CityRepository>();
 builder.Services.AddScoped<IGenericRepositoryInterface<Town>, TownRepository>();
+
+builder.Services.AddScoped<IGenericRepositoryInterface<Employee>, EmployeeRepository>();
+
+builder.Services.AddScoped<IGenericRepositoryInterface<Overtime>, OvertimeRepository>();
+builder.Services.AddScoped<IGenericRepositoryInterface<OvertimeType>, OvertimeTypeRepository>();
+
+builder.Services.AddScoped<IGenericRepositoryInterface<Sanction>, SanctionsRepository>();
+builder.Services.AddScoped<IGenericRepositoryInterface<SanctionType>, SanctionTypeRespository>();
+
+builder.Services.AddScoped<IGenericRepositoryInterface<Vacation>, VacationRepository>();
+builder.Services.AddScoped<IGenericRepositoryInterface<VacationType>, VacationTypeRepository>();
+
+builder.Services.AddScoped<IGenericRepositoryInterface<Doctor>, DoctorRepository>();
 
 
 // adding cors

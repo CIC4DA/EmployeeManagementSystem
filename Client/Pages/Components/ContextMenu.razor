@@ -1,0 +1,241 @@
+﻿<SfDialog Width="300px" IsModal="true" ShowCloseIcon="true" @bind-Visible="IsVisible"
+          CssClass="employee-action-dialog">
+    <DialogEvents OnOpen="OpenContextMenu"></DialogEvents>
+    <DialogTemplates>
+        <Header>
+            <div class="dialog-header">
+                <i class="bi bi-person-gear me-2"></i>
+                <span>Employee Actions</span>
+            </div>
+        </Header>
+        <Content>
+            <div class="action-menu">
+                <!-- Primary Actions -->
+                <div class="action-section">
+                    <div class="action-item" @onclick="ViewClicked">
+                        <i class="bi bi-eye-fill action-icon view-icon"></i>
+                        <span class="action-text">View Details</span>
+                        <i class="bi bi-chevron-right action-arrow"></i>
+                    </div>
+
+                    <div class="action-item" @onclick="EditClicked">
+                        <i class="bi bi-pencil-fill action-icon edit-icon"></i>
+                        <span class="action-text">Edit Employee</span>
+                        <i class="bi bi-chevron-right action-arrow"></i>
+                    </div>
+
+                    <div class="action-item" @onclick="DeleteClicked">
+                        <i class="bi bi-trash-fill action-icon delete-icon"></i>
+                        <span class="action-text">Delete Employee</span>
+                        <i class="bi bi-chevron-right action-arrow"></i>
+                    </div>
+                </div>
+
+                <div class="divider"><span>Additional Actions</span></div>
+
+                <!-- Secondary Actions -->
+                <div class="action-section">
+                    <div class="action-item" @onclick="AddVacationClicked">
+                        <i class="bi bi-sun-fill action-icon vacation-icon"></i>
+                        <span class="action-text">Add Vacation</span>
+                        <i class="bi bi-chevron-right action-arrow"></i>
+                    </div>
+
+                    <div class="action-item" @onclick="AddOvertimeClicked">
+                        <i class="bi bi-stopwatch-fill action-icon overtime-icon"></i>
+                        <span class="action-text">Add Overtime</span>
+                        <i class="bi bi-chevron-right action-arrow"></i>
+                    </div>
+
+                    <div class="action-item" @onclick="AddHealthClicked">
+                        <i class="bi bi-heart-pulse-fill action-icon health-icon"></i>
+                        <span class="action-text">Add Health Record</span>
+                        <i class="bi bi-chevron-right action-arrow"></i>
+                    </div>
+
+                    <div class="action-item" @onclick="AddSanctionClicked">
+                        <i class="bi bi-exclamation-octagon-fill action-icon sanction-icon"></i>
+                        <span class="action-text">Add Sanction</span>
+                        <i class="bi bi-chevron-right action-arrow"></i>
+                    </div>
+                </div>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<style>
+    /* Make close icon white */
+    .employee-action-dialog .e-dlg-closeicon-btn span.e-icons {
+        color: white !important;
+    }
+
+    /* Optional: Change hover color */
+    .employee-action-dialog .e-dlg-closeicon-btn:hover span.e-icons {
+        color: #f0f0f0 !important;
+    }
+
+    /* Dialog Container */
+    .employee-action-dialog .e-dlg-header-content {
+        background: linear-gradient(135deg, #1a2a6c, #3a7bd5);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .dialog-header {
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+        .dialog-header i {
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .dialog-header span {
+            color: white
+        }
+
+    ;
+
+    /* Content Styling */
+    .action-menu {
+        padding: 8px 0;
+    }
+
+    .action-section {
+        margin-bottom: 8px;
+    }
+
+    .action-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 4px;
+    }
+
+        .action-item:hover {
+            background-color: rgba(58, 123, 213, 0.08);
+            transform: translateX(3px);
+        }
+
+    .action-icon {
+        font-size: 1.1rem;
+        margin-right: 12px;
+        width: 24px;
+        text-align: center;
+    }
+
+    .view-icon {
+        color: #17a2b8;
+    }
+
+    .edit-icon {
+        color: #007bff;
+    }
+
+    .delete-icon {
+        color: #dc3545;
+    }
+
+    .vacation-icon {
+        color: #28a745;
+    }
+
+    .overtime-icon {
+        color: #fd7e14;
+    }
+
+    .health-icon {
+        color: #6f42c1;
+    }
+
+    .sanction-icon {
+        color: #6c757d;
+    }
+
+    .action-text {
+        flex-grow: 1;
+        font-size: 0.95rem;
+        color: #495057;
+    }
+
+    .action-arrow {
+        color: #adb5bd;
+        font-size: 0.8rem;
+    }
+
+    /* Divider */
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 12px 16px;
+        color: #6c757d;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .divider::before {
+            margin-right: 12px;
+        }
+
+        .divider::after {
+            margin-left: 12px;
+        }
+
+    /* Dialog Body */
+    .employee-action-dialog .e-dlg-content {
+        padding: 0 !important;
+    }
+</style>
+
+@code {
+    SfDialog? OpenDialog;
+    private bool IsVisible { get; set; } = false;
+
+    [Parameter] public EventCallback HandleViewClicked { get; set; }
+    private async Task ViewClicked() => await HandleViewClicked.InvokeAsync();
+
+    [Parameter] public EventCallback HandleEditClicked { get; set; }
+    private async Task EditClicked() => await HandleEditClicked.InvokeAsync();
+
+    [Parameter] public EventCallback HandleDeleteClicked { get; set; }
+    private async Task DeleteClicked() => await HandleDeleteClicked.InvokeAsync();
+
+    [Parameter] public EventCallback HandleAddVacationClicked { get; set; }
+    private async Task AddVacationClicked() => await HandleAddVacationClicked.InvokeAsync();
+
+    [Parameter] public EventCallback HandleAddOvertimeClicked { get; set; }
+    private async Task AddOvertimeClicked() => await HandleAddOvertimeClicked.InvokeAsync();
+
+    [Parameter] public EventCallback HandleAddSanctionClicked { get; set; }
+    private async Task AddSanctionClicked() => await HandleAddSanctionClicked.InvokeAsync();
+
+    [Parameter] public EventCallback HandleAddHealthClicked { get; set; }
+    private async Task AddHealthClicked() => await HandleAddHealthClicked.InvokeAsync();
+
+    public void OpenContextMenu()
+    {
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    public void CloseContextMenu()
+    {
+        IsVisible = false;
+        StateHasChanged();
+    }
+}

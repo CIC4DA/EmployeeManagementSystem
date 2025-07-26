@@ -20,7 +20,7 @@
 
 
         // Employee
-        public bool ShowEmployee { get; set; }
+        public bool ShowEmployee { get; set; } = true;
 
         public void EmployeeClicked()
         {
@@ -98,6 +98,73 @@
             Action?.Invoke();
         }
 
+        // Health
+        public bool ShowHealth { get; set; }
+
+        public void HealthClicked()
+        {
+            ResetAllDepartments();
+            ShowHealth = true;
+            // The component subscribe to this state
+            Action?.Invoke();
+        }
+
+        // Overtime
+        public bool ShowOvertime { get; set; }
+        public bool ShowOvertimeType { get; set; }
+
+        public void OvertimeClicked()
+        {
+            ResetAllDepartments();
+            ShowOvertime = true;
+            // The component subscribe to this state
+            Action?.Invoke();
+        }
+        public void OvertimeTypeClicked()
+        {
+            ResetAllDepartments();
+            ShowOvertimeType = true;
+            // The component subscribe to this state
+            Action?.Invoke();
+        }
+
+        // Sanction
+        public bool ShowSanction { get; set; }
+        public bool ShowSanctionType { get; set; }
+
+        public void SanctionClicked()
+        {
+            ResetAllDepartments();
+            ShowSanction = true;
+            // The component subscribe to this state
+            Action?.Invoke();
+        }
+        public void SanctionTypeClicked()
+        {
+            ResetAllDepartments();
+            ShowSanctionType = true;
+            // The component subscribe to this state
+            Action?.Invoke();
+        }
+
+        // Vacation
+        public bool ShowVacation { get; set; }
+        public bool ShowVacationType { get; set; }
+
+        public void VacationClicked()
+        {
+            ResetAllDepartments();
+            ShowVacation = true;
+            // The component subscribe to this state
+            Action?.Invoke();
+        }
+        public void VacationTypeClicked()
+        {
+            ResetAllDepartments();
+            ShowVacationType = true;
+            // The component subscribe to this state
+            Action?.Invoke();
+        }
 
         // Ressting all 
         private void ResetAllDepartments()
@@ -110,6 +177,13 @@
             ShowTown = false;
             ShowUser = false;
             ShowEmployee= false;
+            ShowHealth = false;
+            ShowOvertime = false;
+            ShowOvertimeType = false;
+            ShowSanction = false;
+            ShowSanctionType = false;
+            ShowVacation = false;
+            ShowVacationType = false;
         }
     }
 }

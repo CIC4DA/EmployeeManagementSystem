@@ -35,5 +35,36 @@ namespace Server.Controllers
             var result = await accountInterface.RefreshTokenAsync(Token);
             return Ok(result);
         }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsersAsync()
+        {
+            var users = await accountInterface.GetUsers();
+            if (users == null) return NotFound();
+            return Ok(users);
+        }
+
+        [HttpPut("update-user")]
+        public async Task<IActionResult> UpdateUser(ManageUser User)
+        {
+            var result = await accountInterface.UpdateUser(User);
+            return Ok(result);
+        }
+
+
+        [HttpGet("roles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var roles = await accountInterface.GetRoles();
+            if (roles == null) return NotFound();
+            return Ok(roles);
+        }
+
+        [HttpDelete("delete-user/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var result = await accountInterface.DeleteUser(id);
+            return Ok(result);
+        }
     }
 }

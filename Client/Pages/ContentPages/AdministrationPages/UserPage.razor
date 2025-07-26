@@ -1,0 +1,225 @@
+﻿@implements IDisposable
+
+@if (allState.ShowUser)
+{
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card border-0 shadow-sm overflow-hidden">
+                    <div class="card-header border-0 py-3"
+                         style="background: linear-gradient(135deg, #1a2a6c, #3a7bd5);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="m-0 text-white fw-semibold">
+                                <i class="bi bi-people-fill me-2"></i>Mange Users
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 580px;">
+                            <table class="table table-borderless mb-0">
+                                <thead class="" style="background: #0f2027;">
+                                    <tr>
+                                        <th scope="col" class="ps-4 py-3">#</th>
+                                        <th scope="col" class="py-3">ID</th>
+                                        <th scope="col" class="py-3">Name</th>
+                                        <th scope="col" class="py-3">Email</th>
+                                        <th scope="col" class="py-3">Role</th>
+                                        <th scope="col" class="text-end pe-4 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ManageUsers is not null)
+                                    {
+                                        int count = 1;
+                                        foreach (var item in ManageUsers)
+                                        {
+                                            <tr class="@((count % 2 == 0) ? "bg-light" : "bg-white")"
+                                                style="transition: all 0.2s ease; border-bottom: 1px solid #f0f0f0;">
+                                                <td class="ps-4 align-middle">@count</td>
+                                                <td class="align-middle">@item.UserId</td>
+                                                <td class="align-middle">@item.Name</td>
+                                                <td class="align-middle">@item.Email</td>
+                                                <td class="align-middle">@item.Role</td>
+                                                <td class="text-end pe-4 align-middle">
+                                                    <button class="btn btn-sm btn-hover-scale text-primary bg-transparent border-0 p-0 me-2"
+                                                            @onclick="() => EditClicked(item)">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-hover-scale text-danger bg-transparent border-0 p-0"
+                                                            @onclick="() => DeleteClicked(item)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="alert alert-info text-center">
+                                                    No User Added Yet!
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Table styling */
+        .table {
+            font-size: 0.9rem;
+        }
+
+            .table th {
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+                color: #495057;
+            }
+
+            /* Row hover effect */
+            .table tbody tr {
+                transition: all 0.2s ease;
+            }
+
+                .table tbody tr:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+                    background-color: #f8f9fa !important;
+                }
+
+        /* Button hover animation */
+        .btn-hover-scale {
+            transition: transform 0.2s ease;
+        }
+
+            .btn-hover-scale:hover {
+                transform: scale(1.2);
+            }
+
+        /* Scrollbar styling */
+        .table-responsive {
+            scrollbar-width: thin;
+            scrollbar-color: #dee2e6 #f8f9fa;
+        }
+
+            .table-responsive::-webkit-scrollbar {
+                height: 6px;
+                width: 6px;
+            }
+
+            .table-responsive::-webkit-scrollbar-track {
+                background: #f8f9fa;
+            }
+
+            .table-responsive::-webkit-scrollbar-thumb {
+                background-color: #adb5bd;
+                border-radius: 3px;
+            }
+
+        /* Card styling */
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Header gradient */
+        .card-header {
+            border-radius: 0 !important;
+        }
+    </style>
+}
+
+<UserDialog @ref="userDialog"
+              HandleSaveOperationEvent="HandleSaveOperationEvent"
+                ManageUser="ManageUser"
+                SystemRoles="SystemRoles" />
+
+@code {
+	UserDialog? userDialog;
+	ManageUser ManageUser = new();
+	public List<ManageUser> ManageUsers { get; set; } = new();
+	public List<SystemRole> SystemRoles { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await GetUsers();
+		await GetRoles();
+		allState.Action += StateHasChanged;
+	}
+
+	void OpenDialog()
+	{
+		userDialog?.OpenDialog();
+	}
+
+	public void Dispose()
+	{
+		allState.Action -= StateHasChanged;
+	}
+
+
+	// -------------- CALLS -------------
+	private async Task GetUsers()
+	{
+		ManageUsers = await accountService.GetUsers();
+	}
+
+	private async Task GetRoles()
+	{
+		SystemRoles = await accountService.GetRoles();
+	}
+
+	private async Task HandleSaveOperationEvent(ManageUser manageUser)
+	{
+		var response = await accountService.UpdateUser(manageUser);
+		bool successCheck = await DisplayMessage(response.Flag, response.Message);
+		if (successCheck)
+		{
+			ManageUser = new();
+			await GetUsers();
+		}
+	}
+
+	// Edit
+	private void EditClicked(ManageUser mu)
+	{
+		ManageUser = mu;
+		OpenDialog();
+	}
+
+	// Delete
+	private async Task DeleteClicked(ManageUser mu)
+	{
+		bool Confirm = await dialogService.ConfirmAsync($"Are you sure you wanna delete {mu.Name}?", "Confirm Delete");
+		if (!Confirm) return;
+
+		var response = await accountService.DeleteUser(mu.UserId);
+		if (await DisplayMessage(response.Flag, response.Message))
+			await GetUsers();
+	}
+
+	private async Task<bool> DisplayMessage(bool flag, string Message)
+	{
+		if (flag)
+		{
+			await dialogService.AlertAsync(Message, "Success Operation");
+			return true;
+		}
+		else
+		{
+			await dialogService.AlertAsync(Message, "Alert!");
+			return false;
+		}
+	}
+}
