@@ -37,10 +37,19 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<GeneralResponse> DeleteById(int id)
         {
-            var dep = await appDbContext.Departments.FindAsync(id);
-            if (dep is null) return NotFound();
+            var department = await appDbContext.Departments
+                .Include(d => d.Branches)
+                .FirstOrDefaultAsync(d => d.Id == id);
 
-            appDbContext.Departments.Remove(dep);
+            if (department is null) return NotFound();
+
+            // Check if department has any branches
+            if (department.Branches?.Count > 0)
+            {
+                return new GeneralResponse(false, "Cannot delete department because it has branches assigned");
+            }
+
+            appDbContext.Departments.Remove(department);
             await Commit();
             return Success();
         }

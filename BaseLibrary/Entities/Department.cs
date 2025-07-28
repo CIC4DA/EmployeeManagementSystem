@@ -10,6 +10,7 @@ namespace BaseLibrary.Entities
         public int GeneralDepartmentId { get; set; }
 
         // One to many relationship with branch
+        // to prevent circular references during serialization
         [JsonIgnore]
         public List<Branch>? Branches { get; set; }
         

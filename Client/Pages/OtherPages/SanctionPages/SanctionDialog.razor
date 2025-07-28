@@ -1,46 +1,61 @@
-﻿<SfDialog Width="320px" IsModal="true" ShowCloseIcon="true" @bind-Visible="IsVisible">
+﻿<SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" @bind-Visible="IsVisible" CssClass="sanction-dialog">
     <DialogEvents OnOpen="OpenDialog"></DialogEvents>
     <DialogTemplates>
-        <Header>@Title Employee's Sanction</Header>
+        <Header>
+            <div class="dialog-header">
+                <i class="bi bi-exclamation-triangle"></i>
+                <span>@Title Employee Sanction</span>
+            </div>
+        </Header>
         <Content>
-            <EditForm Model="ItemModel" OnSubmit="Save">
-                <div class="card border-success">
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label class="form-label">Employee ID</label>
-                            <input @bind="ItemModel.EmployeeId" class="form-control" disabled />
-                        </div>
-                        <div class="form-group mt-2">
-                            <label class="form-label">Ocurring Date</label>
-                            <InputDate @bind-value="ItemModel.Date" class="form-control" />
-                        </div>
-                        <div class="form-group mt-2">
-                            <label class="form-label">Punnishment Date</label>
-                            <InputDate @bind-value="ItemModel.PunishmentDate" class="form-control" />
-                        </div>
-                        <div class="form-group mt-2">
-                            <label class="form-label">Punishment</label>
-                            <InputTextArea @bind-value="ItemModel.Punishment" class="form-control" />
-                        </div>
-                        <div class="form-group mt-3 mb-3">
-                            <label class="form-label">Select Type</label>
+            <EditForm Model="ItemModel" OnValidSubmit="Save">
+                <DataAnnotationsValidator />
+                <div class="form-container">
+                    <div class="form-group">
+                        <label class="form-label">Employee ID</label>
+                        <input @bind="ItemModel.EmployeeId" class="form-control" disabled />
+                    </div>
 
-                            @if (ItemModel.SanctionType != null)
-                            {
-                                string selected = ItemModel.SanctionType.Name!;
-                                <SfDropDownList TValue="string" TItem="SanctionType" Placeholder=@selected DataSource="@SanctionTypes">
-                                    <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
-                                    <DropDownListEvents TValue="string" TItem="SanctionType" ValueChange="OnValueChange"></DropDownListEvents>
-                                </SfDropDownList>
-                            }
-                            else
-                            {
-                                <SfDropDownList TValue="string" TItem="SanctionType" Placeholder="Select Type" DataSource="@SanctionTypes">
-                                    <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
-                                    <DropDownListEvents TValue="string" TItem="SanctionType" ValueChange="OnValueChange"></DropDownListEvents>
-                                </SfDropDownList>
-                            }
+                    <div class="date-row">
+                        <div class="form-group">
+                            <label class="form-label">Occurring Date</label>
+                            <InputDate @bind-value="ItemModel.Date" class="form-control"/>
+                            <ValidationMessage For="@(() => ItemModel.Date)" class="text-danger small" />
                         </div>
+                        <div class="form-group">
+                            <label class="form-label">Punishment Date</label>
+                            <InputDate @bind-value="ItemModel.PunishmentDate" class="form-control" />
+                            <ValidationMessage For="@(() => ItemModel.PunishmentDate)" class="text-danger small" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Punishment</label>
+                        <InputTextArea @bind-value="ItemModel.Punishment" class="form-control" rows="3" />
+                        <ValidationMessage For="@(() => ItemModel.Punishment)" class="text-danger small" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Sanction Type</label>
+                        @if (ItemModel.SanctionType != null)
+                        {
+                            <SfDropDownList TValue="string" TItem="SanctionType"
+                                            Placeholder="@ItemModel.SanctionType.Name"
+                                            DataSource="@SanctionTypes" CssClass="type-dropdown">
+                                <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
+                                <DropDownListEvents TValue="string" TItem="SanctionType" ValueChange="OnValueChange"></DropDownListEvents>
+                            </SfDropDownList>
+                        }
+                        else
+                        {
+                            <SfDropDownList TValue="string" TItem="SanctionType"
+                                            Placeholder="Select Type"
+                                            DataSource="@SanctionTypes" CssClass="type-dropdown">
+                                <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
+                                <DropDownListEvents TValue="string" TItem="SanctionType" ValueChange="OnValueChange"></DropDownListEvents>
+                            </SfDropDownList>
+                        }
+                        <ValidationMessage For="@(() => ItemModel.SanctionTypeId)" class="text-danger small" />
                     </div>
                 </div>
             </EditForm>
@@ -48,7 +63,8 @@
     </DialogTemplates>
 
     <DialogButtons>
-        <DialogButton Content="SAVE" Type="ButtonType.Button" IsPrimary="true" OnClick="Save" />
+        <DialogButton Content="Cancel" CssClass="btn-cancel" OnClick="CloseDialog" />
+        <DialogButton Content="Save Sanction" CssClass="btn-save" IsPrimary="true" OnClick="Save" />
     </DialogButtons>
 </SfDialog>
 
@@ -59,12 +75,27 @@
     public string Title { get; set; } = "Add";
     private bool IsVisible { get; set; } = false;
 
-    private async void Save()
+    protected override void OnInitialized()
     {
+        ItemModel.Date = DateTime.Now;
+        ItemModel.PunishmentDate = DateTime.Now;
+    }
+
+    private async Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(ItemModel.Punishment))
+        {
+            await dialogService.AlertAsync("Punishment description is required.", "Validation Error");
+            return;
+        }
+
         if (ItemModel.SanctionTypeId <= 0)
-            await dialogService.AlertAsync("You need to provide type.", "Alert!");
-        else
-            await HandleSaveOperationEvent.InvokeAsync(ItemModel);
+        {
+            await dialogService.AlertAsync("You need to select a sanction type.", "Validation Error");
+            return;
+        }
+
+        await HandleSaveOperationEvent.InvokeAsync(ItemModel);
     }
 
     public void OpenDialog()
@@ -82,6 +113,7 @@
     public void OnValueChange(ChangeEventArgs<string, SanctionType> args)
     {
         ItemModel.SanctionTypeId = int.Parse(args.Value.ToString());
+        StateHasChanged();
     }
 
     public void ChangeTitle(string title) => Title = title;

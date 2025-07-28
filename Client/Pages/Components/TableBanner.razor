@@ -1,53 +1,70 @@
 ﻿@implements IDisposable
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-2 cursorStyle">
-            <div class="card border-primary">
-                <div class="card-header" @onclick="EmployeeClicked"> 
-                    <i class="bi bi-people text-primary"></i> Employees
-                    <span class="badge bg-dark fs-6">@Employees.Count</span>
-                </div>
+<div class="dashboard-container">
+    <div class="dashboard-row">
+        <!-- Employee Card -->
+        <div class="dashboard-card employee-card" @onclick="EmployeeClicked">
+            <div class="card-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="card-content">
+                <div class="card-title">Employees</div>
+                <span class="count-badge">@Employees.Count</span>
             </div>
         </div>
-        <div class="col-lg-2 cursorStyle">
-            <div class="card border-success" @onclick="VacationClicked">
-                <div class="card-header">
-                    <i class="bi bi-backpack3 text-success"></i> Vacation
-                    <span class="badge bg-dark fs-6">@Vacations.Count</span>
-                </div>
+
+        <!-- Vacation Card -->
+        <div class="dashboard-card vacation-card" @onclick="VacationClicked">
+            <div class="card-icon">
+                <i class="bi bi-backpack3-fill"></i>
+            </div>
+            <div class="card-content">
+                <div class="card-title">Vacation</div>
+                <span class="count-badge">@Vacations.Count</span>
             </div>
         </div>
-        <div class="col-lg-2 cursorStyle">
-            <div class="card border-danger" @onclick="OvertimeClicked">
-                <div class="card-header">
-                    <i class="bi bi-stopwatch text-danger"></i> Overtime
-                    <span class="badge bg-dark fs-6">@Overtimes.Count</span>
-                </div>
+
+        <!-- Overtime Card -->
+        <div class="dashboard-card overtime-card" @onclick="OvertimeClicked">
+            <div class="card-icon">
+                <i class="bi bi-stopwatch-fill"></i>
+            </div>
+            <div class="card-content">
+                <div class="card-title">Overtime</div>
+                <span class="count-badge">@Overtimes.Count</span>
             </div>
         </div>
-        <div class="col-lg-2 cursorStyle">
-            <div class="card border-warning" @onclick="HealthClicked">
-                <div class="card-header">
-                    <i class="bi bi-hospital text-warning"></i> Health
-                    <span class="badge bg-dark fs-6">@Health.Count</span>
-                </div>
+
+        <!-- Health Card -->
+        <div class="dashboard-card health-card" @onclick="HealthClicked">
+            <div class="card-icon">
+                <i class="bi bi-hospital-fill"></i>
+            </div>
+            <div class="card-content">
+                <div class="card-title">Health</div>
+                <span class="count-badge">@Health.Count</span>
             </div>
         </div>
-        <div class="col-lg-2 cursorStyle">
-            <div class="card border-info">
-                <div class="card-header" @onclick="SanctionClicked">
-                    <i class="bi bi-x-octagon text-info"></i> Sanctions
-                    <span class="badge bg-dark fs-6">@Sanctions.Count</span>
-                </div>
+
+        <!-- Sanctions Card -->
+        <div class="dashboard-card sanctions-card" @onclick="SanctionClicked">
+            <div class="card-icon">
+                <i class="bi bi-x-octagon-fill"></i>
+            </div>
+            <div class="card-content">
+                <div class="card-title">Sanctions</div>
+                <span class="count-badge">@Sanctions.Count</span>
             </div>
         </div>
-        <div class="col-lg-2 cursorStyle">
-            <div class="card border-info">
-                <div class="card-header" @onclick="DepartmentClicked">
-                    <i class="bi bi-x-octagon text-info"></i> Departments
-                    <span class="badge bg-dark fs-6">@Departments.Count</span>
-                </div>
+
+        <!-- Departments Card -->
+        <div class="dashboard-card departments-card" @onclick="DepartmentClicked">
+            <div class="card-icon">
+                <i class="bi bi-building-fill"></i>
+            </div>
+            <div class="card-content">
+                <div class="card-title">Departments</div>
+                <span class="count-badge">@Departments.Count</span>
             </div>
         </div>
     </div>
@@ -84,5 +101,149 @@
     void EmployeeClicked() => allState.EmployeeClicked();
     void DepartmentClicked() => allState.DepartmentClicked();
 
-    public void Dispose() => allState.Action -= StateHasChanged;    
+    public void Dispose() => allState.Action -= StateHasChanged;
 }
+
+<style scoped>
+    .dashboard-container {
+        padding: 1rem;
+        overflow-x: auto;
+    }
+
+    .dashboard-row {
+        display: flex;
+        gap: 1rem;
+        min-width: fit-content;
+    }
+
+    .dashboard-card {
+        border: 2px solid;
+        border-radius: 8px;
+        padding: 1rem;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        min-width: 186px;
+        flex-shrink: 0;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    .card-icon {
+        font-size: 1.25rem;
+        margin-right: 0.75rem;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .card-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .count-badge {
+        background: #2c3e50;
+        color: white;
+        padding: 0.15rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        align-self: flex-start;
+    }
+
+    /* Card-specific styles with matching borders */
+    .employee-card {
+        border-color: #0d6efd;
+    }
+
+        .employee-card .card-icon {
+            background: rgba(13, 110, 253, 0.15);
+            color: #0d6efd;
+        }
+
+    .vacation-card {
+        border-color: #198754;
+    }
+
+        .vacation-card .card-icon {
+            background: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+
+    .overtime-card {
+        border-color: #dc3545;
+    }
+
+        .overtime-card .card-icon {
+            background: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+        }
+
+    .health-card {
+        border-color: #ffc107;
+    }
+
+        .health-card .card-icon {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+
+    .sanctions-card {
+        border-color: #0dcaf0;
+    }
+
+        .sanctions-card .card-icon {
+            background: rgba(13, 202, 240, 0.15);
+            color: #0dcaf0;
+        }
+
+    .departments-card {
+        border-color: #6f42c1;
+    }
+
+        .departments-card .card-icon {
+            background: rgba(111, 66, 193, 0.15);
+            color: #6f42c1;
+        }
+
+    /* Responsive adjustments */
+    @@media (max-width: 1200px) {
+        .dashboard-row {
+            gap: 0.75rem;
+        }
+
+        .dashboard-card {
+            padding: 0.75rem;
+            min-width: 140px;
+        }
+
+        .card-icon {
+            font-size: 1.1rem;
+            width: 32px;
+            height: 32px;
+            margin-right: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+        }
+    }
+</style>

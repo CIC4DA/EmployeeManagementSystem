@@ -31,10 +31,18 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<GeneralResponse> DeleteById(int id)
         {
-            var dep = await appDbContext.GeneralDepartments.FindAsync(id);
-            if (dep is null) return NotFound();
+            var generalDepartment = await appDbContext.GeneralDepartments
+                .Include(gd => gd.Departments)
+                .FirstOrDefaultAsync(gd => gd.Id == id);
 
-            appDbContext.GeneralDepartments.Remove(dep);
+            if (generalDepartment is null) return NotFound();
+
+            if (generalDepartment.Departments?.Count > 0)
+            {
+                return new GeneralResponse(false, "Cannot delete general department because it has departments assigned");
+            }
+
+            appDbContext.GeneralDepartments.Remove(generalDepartment);
             await Commit();
             return Success();
         }

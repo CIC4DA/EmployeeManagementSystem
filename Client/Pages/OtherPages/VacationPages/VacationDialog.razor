@@ -1,46 +1,59 @@
-﻿<SfDialog Width="320px" IsModal="true" ShowCloseIcon="true" @bind-Visible="IsVisible">
+﻿<SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" @bind-Visible="IsVisible" CssClass="vacation-dialog">
     <DialogEvents OnOpen="OpenDialog"></DialogEvents>
     <DialogTemplates>
-        <Header>@Title Employee's Vacation</Header>
+        <Header>
+            <div class="dialog-header">
+                <i class="bi bi-umbrella"></i>
+                <span>@Title Employee Vacation</span>
+            </div>
+        </Header>
         <Content>
-            <EditForm Model="ItemModel" OnSubmit="Save">
-                <div class="card border-success">
-                    <div class="card-body">
+            <EditForm Model="ItemModel" OnValidSubmit="Save">
+                <DataAnnotationsValidator />
+                <div class="form-container">
+                    <div class="form-group">
+                        <label class="form-label">Employee ID</label>
+                        <input @bind="ItemModel.EmployeeId" class="form-control" disabled />
+                    </div>
+
+                    <div class="date-fields">
                         <div class="form-group">
-                            <label class="form-label">Employee ID</label>
-                            <input @bind="ItemModel.EmployeeId" class="form-control" disabled />
-                        </div>
-                        <div class="form-group mt-2">
                             <label class="form-label">Start Date</label>
                             <InputDate @bind-value="ItemModel.StartDate" class="form-control" />
+                            <ValidationMessage For="@(() => ItemModel.StartDate)" class="text-danger small" />
                         </div>
-                        <div class="form-group mt-2">
+                        <div class="form-group">
                             <label class="form-label">Number of Days</label>
-                            <InputNumber @bind-value="ItemModel.NumberOfDays" class="form-control" />
+                            <InputNumber @bind-value="ItemModel.NumberOfDays" class="form-control" min="1" />
+                            <ValidationMessage For="@(() => ItemModel.NumberOfDays)" class="text-danger small" />
                         </div>
-                        <div class="form-group mt-2">
+                        <div class="form-group">
                             <label class="form-label">End Date</label>
-                            <input value="@ItemModel.EndDate.Date" type="text" class="form-control" disabled/>
+                            <input value="@CalculateEndDate()" class="form-control" disabled />
                         </div>
-                        <div class="form-group mt-3 mb-3">
-                            <label class="form-label">Select Type</label>
+                    </div>
 
-                            @if (ItemModel.VacationType != null)
-                            {
-                                string selected = ItemModel.VacationType.Name!;
-                                <SfDropDownList TValue="string" TItem="VacationType" Placeholder=@selected DataSource="@VacationTypes">
-                                    <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
-                                    <DropDownListEvents TValue="string" TItem="VacationType" ValueChange="OnValueChange"></DropDownListEvents>
-                                </SfDropDownList>
-                            }
-                            else
-                            {
-                                <SfDropDownList TValue="string" TItem="VacationType" Placeholder="Select Type" DataSource="@VacationTypes">
-                                    <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
-                                    <DropDownListEvents TValue="string" TItem="VacationType" ValueChange="OnValueChange"></DropDownListEvents>
-                                </SfDropDownList>
-                            }
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Vacation Type</label>
+                        @if (ItemModel.VacationType != null)
+                        {
+                            <SfDropDownList TValue="string" TItem="VacationType"
+                                            Placeholder="@ItemModel.VacationType.Name"
+                                            DataSource="@VacationTypes" CssClass="type-dropdown">
+                                <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
+                                <DropDownListEvents TValue="string" TItem="VacationType" ValueChange="OnValueChange"></DropDownListEvents>
+                            </SfDropDownList>
+                        }
+                        else
+                        {
+                            <SfDropDownList TValue="string" TItem="VacationType"
+                                            Placeholder="Select Type"
+                                            DataSource="@VacationTypes" CssClass="type-dropdown">
+                                <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
+                                <DropDownListEvents TValue="string" TItem="VacationType" ValueChange="OnValueChange"></DropDownListEvents>
+                            </SfDropDownList>
+                        }
+                        <ValidationMessage For="@(() => ItemModel.VacationTypeId)" class="text-danger small" />
                     </div>
                 </div>
             </EditForm>
@@ -48,7 +61,8 @@
     </DialogTemplates>
 
     <DialogButtons>
-        <DialogButton Content="SAVE" Type="ButtonType.Button" IsPrimary="true" OnClick="Save" />
+        <DialogButton Content="Cancel" CssClass="btn-cancel" OnClick="CloseDialog" />
+        <DialogButton Content="Save Vacation" CssClass="btn-save" IsPrimary="true" OnClick="Save" />
     </DialogButtons>
 </SfDialog>
 
@@ -59,12 +73,35 @@
     public string Title { get; set; } = "Add";
     private bool IsVisible { get; set; } = false;
 
-    private async void Save()
+    protected override void OnInitialized()
     {
+        ItemModel.StartDate = DateTime.Now;
+        ItemModel.NumberOfDays = 1; 
+    }
+
+    private string CalculateEndDate()
+    {
+        if (ItemModel.StartDate == default || ItemModel.NumberOfDays <= 0)
+            return string.Empty;
+
+        return ItemModel.StartDate.AddDays(ItemModel.NumberOfDays - 1).ToShortDateString();
+    }
+
+    private async Task Save()
+    {
+        if (ItemModel.NumberOfDays < 1)
+        {
+            await dialogService.AlertAsync("Number of days must be at least 1.", "Validation Error");
+            return;
+        }
+
         if (ItemModel.VacationTypeId <= 0)
-            await dialogService.AlertAsync("You need to provide type.", "Alert!");
-        else
-            await HandleSaveOperationEvent.InvokeAsync(ItemModel);
+        {
+            await dialogService.AlertAsync("You need to select a vacation type.", "Validation Error");
+            return;
+        }
+
+        await HandleSaveOperationEvent.InvokeAsync(ItemModel);
     }
 
     public void OpenDialog()
@@ -82,8 +119,8 @@
     public void OnValueChange(ChangeEventArgs<string, VacationType> args)
     {
         ItemModel.VacationTypeId = int.Parse(args.Value.ToString());
+        StateHasChanged();
     }
 
     public void ChangeTitle(string title) => Title = title;
 }
-    

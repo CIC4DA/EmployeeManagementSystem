@@ -1,28 +1,33 @@
-﻿
-<SfDialog Width="320px" IsModal="true" ShowCloseIcon="true" @bind-Visible="IsVisible">
+﻿<SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" @bind-Visible="IsVisible" CssClass="health-dialog">
     <DialogEvents OnOpen="OpenDialog"></DialogEvents>
     <DialogTemplates>
-        <Header>Add Employee Health Issue</Header>
+        <Header>
+            <div class="dialog-header">
+                <i class="bi bi-heart-pulse"></i>
+                <span>@Title Employee Health Record</span>
+            </div>
+        </Header>
         <Content>
             <EditForm Model="Doctor" OnSubmit="Save">
-                <div class="card border-success">
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label class="form-label">Employee ID</label>
-                            <input @bind="Doctor.EmployeeId" class="form-control" disabled />
-                        </div>
-                        <div class="form-group mt-2">
-                            <label class="form-label">Date</label>
-                            <InputDate @bind-Value="Doctor.Date" class="form-control" />
-                        </div>
-                        <div class="form-group mt-2">
-                            <label class="form-label">Medical Diagnose</label>
-                            <InputTextArea @bind-Value="Doctor.MedicalDiagnosis" class="form-control" />
-                        </div>
-                        <div class="form-group mt-2">
-                            <label class="form-label">Recommendation</label>
-                            <InputTextArea @bind-Value="Doctor.MedicalRecommendation" class="form-control" />
-                        </div>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label class="form-label">Employee ID</label>
+                        <input @bind="Doctor.EmployeeId" class="form-control" disabled />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <InputDate @bind-Value="Doctor.Date" class="form-control" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Medical Diagnosis</label>
+                        <InputTextArea @bind-Value="Doctor.MedicalDiagnosis" class="form-control" rows="3" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Medical Recommendation</label>
+                        <InputTextArea @bind-Value="Doctor.MedicalRecommendation" class="form-control" rows="3" />
                     </div>
                 </div>
             </EditForm>
@@ -30,9 +35,114 @@
     </DialogTemplates>
 
     <DialogButtons>
-        <DialogButton Content="SAVE" Type="ButtonType.Button" IsPrimary="true" OnClick="Save" />
+        <DialogButton Content="Cancel" CssClass="btn-cancel" OnClick="CloseDialog" />
+        <DialogButton Content="Save Record" CssClass="btn-save" IsPrimary="true" OnClick="Save" />
     </DialogButtons>
 </SfDialog>
+
+<style>
+    .health-dialog .e-dlg-header-content {
+        padding: 1rem 1.5rem;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .dialog-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+        .dialog-header span {
+            color: black;
+        }
+
+        .dialog-header i {
+            color: #dc3545;
+            font-size: 1.3rem;
+        }
+
+    .health-dialog .e-dlg-content {
+        padding: 1.5rem;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .form-control {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+    .form-control:focus {
+        border-color: #3a7bd5;
+        box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.25);
+    }
+
+    .health-dialog .e-footer-content {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn-cancel {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background-color: #e9ecef;
+    }
+
+    .btn-save {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .btn-save:hover {
+        background-color: #218838;
+    }
+
+    @@media (max-width: 576px) {
+        .health-dialog {
+            width: 95% !important;
+            max-width: 100%;
+            margin: 0.5rem;
+        }
+    }
+</style>
 
 @code {
     public string Title { get; set; } = "Add";
@@ -41,6 +151,11 @@
 
     private bool IsVisible { get; set; } = false;
     private async void Save() => await HandleSaveOperationEvent.InvokeAsync(Doctor);
+
+    protected override void OnInitialized()
+    {
+        Doctor.Date = DateTime.Now;
+    }
 
     public void OpenDialog()
     {

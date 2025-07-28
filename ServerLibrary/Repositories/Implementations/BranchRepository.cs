@@ -34,8 +34,16 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<GeneralResponse> DeleteById(int id)
         {
-            var branch = await appDbContext.Branches.FindAsync(id);
+            // Include is used to load the employees also
+            var branch = await appDbContext.Branches
+                                .Include(b => b.Employees)
+                                .FirstOrDefaultAsync(b => b.Id == id);
             if (branch is null) return NotFound();
+
+            if (branch.Employees?.Count > 0)
+            {
+                return new GeneralResponse(false, "Cannot delete branch because it has employees assigned");
+            }
 
             appDbContext.Branches.Remove(branch);
             await Commit();
